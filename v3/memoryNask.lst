@@ -1,0 +1,52 @@
+     1 00000000                                 [FORMAT "WCOFF"]
+     2 00000000                                 [INSTRSET "i486p"]
+     3 00000000                                 [BITS 32]
+     4 00000000                                 [FILE "memory.nas"]
+     5 00000000                                 
+     6 00000000                                 GLOBAL	_memTest_asm, _store_cr0, _load_cr0
+     7                                          [SECTION .text]
+     8 00000000                                 
+     9 00000000                                 ; unsigned int memTest_asm(unsigned int start, unsigned int end)
+    10 00000000                                 _memTest_asm:
+    11 00000000 57                              		PUSH	EDI
+    12 00000001 56                              		PUSH	ESI
+    13 00000002 53                              		PUSH	EBX
+    14 00000003 BE AA55AA55                     		MOV		ESI,0xaa55aa55			; pat0 = 0xaa55aa55;
+    15 00000008 BF 55AA55AA                     		MOV		EDI,0x55aa55aa			; pat1 = 0x55aa55aa;
+    16 0000000D 8B 44 24 10                     		MOV		EAX,[ESP+12+4]			; i = start;
+    17 00000011                                 loop:
+    18 00000011 89 C3                           		MOV		EBX,EAX
+    19 00000013 81 C3 00000FFC                  		ADD		EBX,0xffc				; p = i + 0xffc;
+    20 00000019 8B 13                           		MOV		EDX,[EBX]				; old = *p;
+    21 0000001B 89 33                           		MOV		[EBX],ESI				; *p = pat0;
+    22 0000001D 83 33 FF                        		XOR		DWORD [EBX],0xffffffff	; *p ^= 0xffffffff;
+    23 00000020 3B 3B                           		CMP		EDI,[EBX]				; if (*p != pat1) goto fin;
+    24 00000022 75 18                           		JNE		fin
+    25 00000024 83 33 FF                        		XOR		DWORD [EBX],0xffffffff	; *p ^= 0xffffffff;
+    26 00000027 3B 33                           		CMP		ESI,[EBX]				; if (*p != pat0) goto fin;
+    27 00000029 75 11                           		JNE		fin
+    28 0000002B 89 13                           		MOV		[EBX],EDX				; *p = old;
+    29 0000002D 05 00001000                     		ADD		EAX,0x1000				; i += 0x1000;
+    30 00000032 3B 44 24 14                     		CMP		EAX,[ESP+12+8]			; if (i <= end) goto loop;
+    31 00000036 76 D9                           		JBE		loop
+    32 00000038 5B                              		POP		EBX
+    33 00000039 5E                              		POP		ESI
+    34 0000003A 5F                              		POP		EDI
+    35 0000003B C3                              		RET
+    36 0000003C                                 fin:
+    37 0000003C 89 13                           		MOV		[EBX],EDX				; *p = old;
+    38 0000003E 5B                              		POP		EBX
+    39 0000003F 5E                              		POP		ESI
+    40 00000040 5F                              		POP		EDI
+    41 00000041 C3                              		RET
+    42 00000042                                 
+    43 00000042                                 ; void _store_cr0(unsigned int cr0)
+    44 00000042                                 _store_cr0: 
+    45 00000042 8B 44 24 04                     		MOV		EAX,[ESP+4]
+    46 00000046 0F 22 C0                        		MOV		CR0,EAX
+    47 00000049 C3                              		RET
+    48 0000004A                                 
+    49 0000004A                                 ; unsigned int load_cr0();
+    50 0000004A                                 _load_cr0:
+    51 0000004A 0F 20 C0                        		MOV EAX, CR0
+    52 0000004D C3                              		RET

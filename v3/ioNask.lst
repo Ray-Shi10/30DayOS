@@ -1,0 +1,49 @@
+     1 00000000                                 [FORMAT "WCOFF"]
+     2 00000000                                 [INSTRSET "i486p"]
+     3 00000000                                 [BITS 32]
+     4 00000000                                 [FILE "ioNask.nas"]
+     5 00000000                                 
+     6 00000000                                 GLOBAL	_io_hlt
+     7 00000000                                 GLOBAL	_io_in8,  _io_in16,  _io_in32
+     8 00000000                                 GLOBAL	_io_out8, _io_out16, _io_out32
+     9 00000000                                 
+    10                                          [SECTION .text]
+    11 00000000                                 
+    12 00000000                                 _io_hlt:	; void io_hlt();
+    13 00000000 F4                              		HLT
+    14 00000001 C3                              		RET
+    15 00000002                                 
+    16 00000002                                 _io_in8:	; int io_in8(int port);
+    17 00000002 8B 54 24 04                     		MOV		EDX,[ESP+4]		; port
+    18 00000006 B8 00000000                     		MOV		EAX,0
+    19 0000000B EC                              		IN		AL,DX
+    20 0000000C C3                              		RET
+    21 0000000D                                 
+    22 0000000D                                 _io_in16:	; int io_in16(int port);
+    23 0000000D 8B 54 24 04                     		MOV		EDX,[ESP+4]		; port
+    24 00000011 B8 00000000                     		MOV		EAX,0
+    25 00000016 66 ED                           		IN		AX,DX
+    26 00000018 C3                              		RET
+    27 00000019                                 
+    28 00000019                                 _io_in32:	; int io_in32(int port);
+    29 00000019 8B 54 24 04                     		MOV		EDX,[ESP+4]		; port
+    30 0000001D ED                              		IN		EAX,DX
+    31 0000001E C3                              		RET
+    32 0000001F                                 
+    33 0000001F                                 _io_out8:	; void io_out8(int port, int data);
+    34 0000001F 8B 54 24 04                     		MOV		EDX,[ESP+4]		; port
+    35 00000023 8A 44 24 08                     		MOV		AL,[ESP+8]		; data
+    36 00000027 EE                              		OUT		DX,AL
+    37 00000028 C3                              		RET
+    38 00000029                                 
+    39 00000029                                 _io_out16:	; void io_out16(int port, int data);
+    40 00000029 8B 54 24 04                     		MOV		EDX,[ESP+4]		; port
+    41 0000002D 8B 44 24 08                     		MOV		EAX,[ESP+8]		; data
+    42 00000031 66 EF                           		OUT		DX,AX
+    43 00000033 C3                              		RET
+    44 00000034                                 
+    45 00000034                                 _io_out32:	; void io_out32(int port, int data);
+    46 00000034 8B 54 24 04                     		MOV		EDX,[ESP+4]		; port
+    47 00000038 8B 44 24 08                     		MOV		EAX,[ESP+8]		; data
+    48 0000003C EF                              		OUT		DX,EAX
+    49 0000003D C3                              		RET
